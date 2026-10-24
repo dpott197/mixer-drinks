@@ -1,5 +1,6 @@
 """Build drinks.json for the site from Mixer-Android's asset JSON.
 
+Run scripts/fetch_images.sh first so drinks link to their images.
 Usage: python3 scripts/build_data.py <path-to-mixer-android>/core/src/main/assets/json
 """
 import json
@@ -7,7 +8,9 @@ import sys
 from pathlib import Path
 
 src = Path(sys.argv[1])
-out = Path(__file__).resolve().parent.parent / "drinks.json"
+root = Path(__file__).resolve().parent.parent
+out = root / "drinks.json"
+images = {p.stem for p in (root / "images").glob("*.webp")}
 
 
 def load(name):
@@ -59,15 +62,18 @@ for d in load("drinks"):
         "themes": set(t for t in drink_themes.get(d["id"], set()) | {themes.get(t) for t in d["links"].get("themes", [])} if t),
         "color": argb_to_hex(d.get("vibrant_color")),
         "dark": argb_to_hex(d.get("dark_vibrant_color")),
+        "img": d["id"] if d["id"] in images else None,
     }
     key = name.lower()
     prev = by_name.get(key)
     if prev:
         # Same drink appears once per menu theme; keep the richest copy and merge the themes.
         entry["themes"] |= prev["themes"]
+        entry["img"] = entry["img"] or prev["img"]
         score = lambda e: (len(e["ingredients"]), len(e["description"]) + len(e["instructions"]) + len(e["history"]))
         if score(prev) >= score(entry):
             prev["themes"] = entry["themes"]
+            prev["img"] = prev["img"] or entry["img"]
             continue
     by_name[key] = entry
 

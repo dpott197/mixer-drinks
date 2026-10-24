@@ -4,6 +4,10 @@ Mixer Drinks — a searchable site of the cocktail recipes from [Mixer-Android](
 
 Live at https://dpott197.github.io/mixer-drinks/
 
-Regenerate the data:
+Drink images come from [MonsieurCode/monsieur-data](https://github.com/MonsieurCode/monsieur-data), resized to 480px WebP.
+
+Regenerate the images and data:
+
+    scripts/fetch_images.sh ../mixer-android/core/src/main/assets/json
 
     python3 scripts/build_data.py ../mixer-android/core/src/main/assets/json

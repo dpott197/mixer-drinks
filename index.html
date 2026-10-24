@@ -44,7 +44,8 @@ select { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; text-align: left; padding: 0; color: inherit; font: inherit; box-shadow: var(--shadow); transition: transform .15s ease; display: flex; flex-direction: column; }
 .card:hover { transform: translateY(-2px); }
 .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.swatch { height: 120px; display: grid; place-items: center; position: relative; }
+.swatch { height: 170px; display: grid; place-items: center; position: relative; }
+.swatch img { height: 150px; width: auto; max-width: 90%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
 .swatch svg { width: 64px; height: 76px; color: rgba(255,255,255,.92); filter: drop-shadow(0 2px 6px rgba(0,0,0,.18)); }
 .abv { position: absolute; top: 10px; right: 10px; font: 600 11px Inter, sans-serif; background: rgba(0,0,0,.28); color: #fff; padding: 3px 8px; border-radius: 999px; }
 .card-body { padding: 12px 14px 14px; }
@@ -53,7 +54,8 @@ select { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
 .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 60px 0; }
 dialog { border: none; padding: 0; border-radius: 18px; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
 dialog::backdrop { background: rgba(15,10,6,.55); }
-.d-hero { height: 150px; display: grid; place-items: center; position: relative; }
+.d-hero { height: 240px; display: grid; place-items: center; position: relative; }
+.d-hero img { height: 220px; width: auto; max-width: 90%; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.3)); }
 .d-hero svg { width: 80px; height: 96px; color: rgba(255,255,255,.92); }
 .close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(0,0,0,.3); color: #fff; font-size: 20px; cursor: pointer; }
 .d-body { padding: 20px 24px 26px; }
@@ -122,6 +124,7 @@ const GLASS_SVG = {
 };
 const DEFAULT_GLASS = '<path d="M14 14h36l-4 56H18z"/>';
 const svg = g => `<svg viewBox="0 0 64 76" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${GLASS_SVG[g] || DEFAULT_GLASS}</svg>`;
+const picture = d => d.img ? `<img src="images/${d.img}.webp" alt="" loading="lazy" decoding="async">` : svg(d.glass);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -175,7 +178,7 @@ function render() {
   $("count").textContent = `${list.length} of ${drinks.length} drinks`;
   $("grid").innerHTML = list.length ? list.map(d => `
     <button class="card" data-slug="${d.slug}">
-      <div class="swatch" style="background:${background(d)}">${svg(d.glass)}${d.abv != null ? `<span class="abv">${d.abv ? "~" + Math.round(d.abv) + "% ABV" : "Zero proof"}</span>` : ""}</div>
+      <div class="swatch" style="background:${background(d)}">${picture(d)}${d.abv != null ? `<span class="abv">${d.abv ? "~" + Math.round(d.abv) + "% ABV" : "Zero proof"}</span>` : ""}</div>
       <div class="card-body"><h3>${esc(d.name)}</h3><p>${esc(d.description || d.ingredients.map(i => i.name).join(", "))}</p></div>
     </button>`).join("") : `<div class="empty">No drinks match. Try clearing a filter.</div>`;
 }
@@ -196,7 +199,7 @@ function openFromHash() {
   if (!d) { if ($("detail").open) $("detail").close(); return; }
   current = d;
   $("d-hero").style.background = background(d);
-  $("d-hero").innerHTML = svg(d.glass) + '<button class="close" id="d-close" aria-label="Close">×</button>';
+  $("d-hero").innerHTML = picture(d) + '<button class="close" id="d-close" aria-label="Close">×</button>';
   $("d-close").onclick = () => $("detail").close();
   $("d-name").textContent = d.name;
   $("d-meta").innerHTML = [d.glass, d.abv != null ? (d.abv ? `~${Math.round(d.abv)}% ABV` : "Zero proof") : "", ...d.themes]
