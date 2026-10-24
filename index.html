@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixer Drinks</title>
+<meta name="description" content="Browse 560+ cocktail recipes from the Mixer drink machine menu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f1ea; --surface: #fffdf9; --ink: #1f1a17; --muted: #6f655d; --line: #e4dbd0;
+  --accent: #b5452b; --accent-ink: #fff; --chip: #efe7dc; --shadow: 0 1px 2px rgba(40,25,10,.06), 0 8px 24px rgba(40,25,10,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14110f; --surface: #1e1a17; --ink: #f3ece4; --muted: #a59a90; --line: #332c27;
+    --accent: #e0714f; --accent-ink: #14110f; --chip: #2a241f; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14110f; --surface: #1e1a17; --ink: #f3ece4; --muted: #a59a90; --line: #332c27;
+  --accent: #e0714f; --accent-ink: #14110f; --chip: #2a241f; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+header { padding: 48px 0 20px; }
+h1 { font: 700 clamp(2.2rem, 6vw, 3.6rem)/1.05 Fraunces, Georgia, serif; margin: 0 0 8px; letter-spacing: -.02em; }
+.lede { color: var(--muted); margin: 0; max-width: 60ch; }
+.controls { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); padding: 12px 0; border-bottom: 1px solid var(--line); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.search { flex: 1 1 260px; min-width: 0; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
+.search:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+select { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; max-width: 100%; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid transparent; background: var(--chip); color: var(--ink); padding: 6px 12px; border-radius: 999px; font: 500 13px Inter, sans-serif; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.count { color: var(--muted); font-size: 13px; padding: 14px 0 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding-bottom: 60px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; text-align: left; padding: 0; color: inherit; font: inherit; box-shadow: var(--shadow); transition: transform .15s ease; display: flex; flex-direction: column; }
+.card:hover { transform: translateY(-2px); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.swatch { height: 120px; display: grid; place-items: center; position: relative; }
+.swatch svg { width: 64px; height: 76px; color: rgba(255,255,255,.92); filter: drop-shadow(0 2px 6px rgba(0,0,0,.18)); }
+.abv { position: absolute; top: 10px; right: 10px; font: 600 11px Inter, sans-serif; background: rgba(0,0,0,.28); color: #fff; padding: 3px 8px; border-radius: 999px; }
+.card-body { padding: 12px 14px 14px; }
+.card h3 { font: 600 1.05rem/1.25 Fraunces, Georgia, serif; margin: 0 0 4px; }
+.card p { margin: 0; color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 60px 0; }
+dialog { border: none; padding: 0; border-radius: 18px; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+dialog::backdrop { background: rgba(15,10,6,.55); }
+.d-hero { height: 150px; display: grid; place-items: center; position: relative; }
+.d-hero svg { width: 80px; height: 96px; color: rgba(255,255,255,.92); }
+.close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(0,0,0,.3); color: #fff; font-size: 20px; cursor: pointer; }
+.d-body { padding: 20px 24px 26px; }
+.d-body h2 { font: 700 1.8rem/1.1 Fraunces, Georgia, serif; margin: 0 0 6px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 16px; }
+.tag { background: var(--chip); padding: 3px 10px; border-radius: 999px; font-size: 12px; }
+h4 { font: 600 12px Inter, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 20px 0 8px; display: flex; justify-content: space-between; align-items: center; }
+.units { border: 1px solid var(--line); background: none; color: var(--ink); border-radius: 6px; font: 500 11px Inter, sans-serif; padding: 2px 8px; cursor: pointer; letter-spacing: 0; text-transform: none; }
+ul.ings { list-style: none; margin: 0; padding: 0; }
+ul.ings li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+ul.ings li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d-body p { margin: 0 0 8px; }
+.history { color: var(--muted); font-size: 14px; font-style: italic; }
+footer { color: var(--muted); font-size: 13px; padding: 24px 0 40px; border-top: 1px solid var(--line); }
+footer a { color: inherit; }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1>Mixer Drinks</h1>
+  <p class="lede">Every recipe from the Mixer drink machine menu, from the Mixer Android app. Search by name or ingredient, or filter by spirit, glass and menu.</p>
+</header>
+<div class="controls">
+  <div class="wrap">
+    <div class="row">
+      <input class="search" id="q" type="search" placeholder="Search drinks or ingredients…" aria-label="Search drinks or ingredients" autocomplete="off">
+      <select id="glass" aria-label="Glass"><option value="">Any glass</option></select>
+      <select id="menu" aria-label="Menu"><option value="">Any menu</option></select>
+    </div>
+    <div class="chips" id="spirits" role="group" aria-label="Base spirit"></div>
+  </div>
+</div>
+<main class="wrap">
+  <div class="count" id="count" aria-live="polite"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer class="wrap">Recipes from <a href="https://github.com/dpott197/mixer-android">Mixer-Android</a>. Please drink responsibly.</footer>
+
+<dialog id="detail" aria-labelledby="d-name">
+  <div class="d-hero" id="d-hero"><button class="close" id="d-close" aria-label="Close">×</button></div>
+  <div class="d-body">
+    <h2 id="d-name"></h2>
+    <div class="meta" id="d-meta"></div>
+    <p id="d-desc"></p>
+    <h4>Ingredients <button class="units" id="d-units"></button></h4>
+    <ul class="ings" id="d-ings"></ul>
+    <div id="d-garnish"></div>
+    <div id="d-steps"></div>
+    <div id="d-history"></div>
+  </div>
+</dialog>
+
+<script>
+const SPIRITS = [
+  ["Vodka", /vodka/i], ["Gin", /\bgin\b/i], ["Rum", /\brum\b/i], ["Tequila", /tequila|mezcal/i],
+  ["Whiskey", /whisk|bourbon|scotch|rye/i], ["Brandy", /brandy|cognac/i], ["Liqueur", /schnapps|liqueur|amaretto|triple sec|irish cream|kahl|vermouth/i],
+];
+const GLASS_SVG = {
+  "Martini Glass": '<path d="M6 8h52L32 40zM32 40v28M20 70h24"/>',
+  "Shot Glass": '<path d="M18 26h28l-4 44H22z"/>',
+  "Rocks Glass": '<path d="M12 28h40l-4 42H16z"/><path d="M14 46h36"/>',
+  "Highball Glass": '<path d="M16 8h32l-3 62H19z"/><path d="M17 30h30"/>',
+  "Collins Glass": '<path d="M19 4h26l-2 66H21z"/><path d="M20 24h24"/><path d="M38 0l-6 30"/>',
+  "Mason Jar": '<path d="M16 12h32v6l3 4v44a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4V22l3-4z"/><path d="M16 18h32"/>',
+  "White Wine Glass": '<path d="M18 6h28c0 18-4 30-14 30S18 24 18 6zM32 36v32M20 70h24"/>',
+};
+const DEFAULT_GLASS = '<path d="M14 14h36l-4 56H18z"/>';
+const svg = g => `<svg viewBox="0 0 64 76" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${GLASS_SVG[g] || DEFAULT_GLASS}</svg>`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function hue(name) { let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
+function background(d) {
+  if (d.color) return `linear-gradient(145deg, ${d.color}, ${d.dark || d.color})`;
+  const h = hue(d.name);
+  return `linear-gradient(145deg, hsl(${h} 55% 52%), hsl(${(h + 40) % 360} 50% 30%))`;
+}
+function abv(d) {
+  const total = d.ingredients.reduce((s, i) => s + (i.ml || 0), 0);
+  if (!total) return null;
+  return d.ingredients.reduce((s, i) => s + (i.ml || 0) * (i.proof || 0) / 2, 0) / total;
+}
+
+let drinks = [], spirit = "", metric = false;
+try { metric = localStorage.getItem("units") === "ml"; } catch {}
+const $ = id => document.getElementById(id);
+
+fetch("drinks.json").then(r => r.json()).then(data => {
+  drinks = data.map(d => ({ ...d, slug: slug(d.name), abv: abv(d),
+    haystack: (d.name + " " + d.ingredients.map(i => i.name).join(" ")).toLowerCase() }));
+  for (const g of [...new Set(drinks.map(d => d.glass).filter(Boolean))].sort()) $("glass").add(new Option(g, g));
+  for (const t of [...new Set(drinks.flatMap(d => d.themes))].sort()) $("menu").add(new Option(t, t));
+  $("spirits").innerHTML = [["All", ""], ...SPIRITS.map(([n]) => [n, n]), ["Zero proof", "zero"]]
+    .map(([label, v]) => `<button class="chip" data-v="${v}" aria-pressed="${v === spirit}">${label}</button>`).join("");
+  render();
+  openFromHash();
+});
+
+$("spirits").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  spirit = b.dataset.v;
+  for (const c of $("spirits").children) c.setAttribute("aria-pressed", c === b);
+  render();
+});
+for (const id of ["q", "glass", "menu"]) $(id).addEventListener("input", render);
+
+function matches(d) {
+  const q = $("q").value.trim().toLowerCase();
+  if (q && !q.split(/\s+/).every(w => d.haystack.includes(w))) return false;
+  if ($("glass").value && d.glass !== $("glass").value) return false;
+  if ($("menu").value && !d.themes.includes($("menu").value)) return false;
+  if (spirit === "zero") return d.abv === 0 || d.themes.includes("Zero Proof");
+  if (spirit) { const re = SPIRITS.find(s => s[0] === spirit)[1]; return d.ingredients.some(i => i.proof > 0 && re.test(i.name)); }
+  return true;
+}
+
+function render() {
+  const list = drinks.filter(matches);
+  $("count").textContent = `${list.length} of ${drinks.length} drinks`;
+  $("grid").innerHTML = list.length ? list.map(d => `
+    <button class="card" data-slug="${d.slug}">
+      <div class="swatch" style="background:${background(d)}">${svg(d.glass)}${d.abv != null ? `<span class="abv">${d.abv ? "~" + Math.round(d.abv) + "% ABV" : "Zero proof"}</span>` : ""}</div>
+      <div class="card-body"><h3>${esc(d.name)}</h3><p>${esc(d.description || d.ingredients.map(i => i.name).join(", "))}</p></div>
+    </button>`).join("") : `<div class="empty">No drinks match. Try clearing a filter.</div>`;
+}
+
+$("grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) location.hash = c.dataset.slug; });
+window.addEventListener("hashchange", openFromHash);
+
+function amount(ml) {
+  if (ml == null) return "to taste";
+  if (metric) return `${ml} mL`;
+  const oz = Math.round(ml / 29.5735 * 4) / 4;
+  return oz ? `${oz} oz` : "splash";
+}
+
+let current = null;
+function openFromHash() {
+  const d = drinks.find(x => x.slug === decodeURIComponent(location.hash.slice(1)));
+  if (!d) { if ($("detail").open) $("detail").close(); return; }
+  current = d;
+  $("d-hero").style.background = background(d);
+  $("d-hero").innerHTML = svg(d.glass) + '<button class="close" id="d-close" aria-label="Close">×</button>';
+  $("d-close").onclick = () => $("detail").close();
+  $("d-name").textContent = d.name;
+  $("d-meta").innerHTML = [d.glass, d.abv != null ? (d.abv ? `~${Math.round(d.abv)}% ABV` : "Zero proof") : "", ...d.themes]
+    .filter(Boolean).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  $("d-desc").textContent = d.description;
+  fillIngredients();
+  $("d-garnish").innerHTML = d.garnishes.length ? `<h4>Garnish</h4><p>${esc(d.garnishes.join(", "))}</p>` : "";
+  $("d-steps").innerHTML = d.instructions ? `<h4>Method</h4><p>${esc(d.instructions)}</p>` : "";
+  $("d-history").innerHTML = d.history ? `<h4>History</h4><p class="history">${esc(d.history)}</p>` : "";
+  document.title = `${d.name} · Mixer Drinks`;
+  if (!$("detail").open) $("detail").showModal();
+}
+function fillIngredients() {
+  $("d-units").textContent = metric ? "Show oz" : "Show mL";
+  $("d-ings").innerHTML = current.ingredients.length
+    ? current.ingredients.map(i => `<li><span>${esc(i.name)}</span><span>${amount(i.ml)}</span></li>`).join("")
+    : "<li><span>No ingredients listed</span><span></span></li>";
+}
+$("d-units").addEventListener("click", () => {
+  metric = !metric;
+  try { localStorage.setItem("units", metric ? "ml" : "oz"); } catch {}
+  fillIngredients();
+});
+$("detail").addEventListener("close", () => {
+  document.title = "Mixer Drinks";
+  if (location.hash) history.pushState("", "", location.pathname + location.search);
+});
+$("detail").addEventListener("click", e => { if (e.target === $("detail")) $("detail").close(); });
+</script>
+</body>
+</html>
